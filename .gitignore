@@ -1,0 +1,83 @@
+# Vim swap files
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Vim backup files
+*~
+*.bak
+*.backup
+
+# Vim undo files
+*.un~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# User-specific Vim files
+.netrwhist
+Session.vim
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# LS-DYNA specific temporary files
+*.mes
+*.ptf
+*.d3*
+binout*
+messag
+d3hsp
+*.lsda
+
+# Personal configuration files
+.cshrc
+.bashrc
+.profile

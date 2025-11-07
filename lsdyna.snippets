@@ -1,0 +1,362 @@
+# LS-DYNA Snippets for Vim
+# This file contains code snippets for common LS-DYNA keyword cards
+# Compatible with UltiSnips, SnipMate, and similar snippet engines
+#
+# Installation:
+# - For UltiSnips: Place in ~/.vim/UltiSnips/lsdyna.snippets
+# - For SnipMate: Place in ~/.vim/snippets/lsdyna.snippets
+#
+# Usage: Type the trigger word and press Tab to expand
+
+# Basic structure
+snippet keyword "Basic LS-DYNA file structure"
+*KEYWORD
+${1:$
+$ LS-DYNA Input Deck
+$ Created: `date +%Y-%m-%d`
+}
+*TITLE
+${2:Simulation Title}
+${0}
+*END
+endsnippet
+
+snippet title "Title card"
+*TITLE
+${1:Simulation Title}
+endsnippet
+
+# Node definition
+snippet node "Node definition"
+*NODE
+$#   nid               x               y               z      tc      rc
+${1:       1}${2:             0.0}${3:             0.0}${4:             0.0}${5:       0}${6:       0}
+${0}
+endsnippet
+
+# Element definitions
+snippet elsolid "Solid element"
+*ELEMENT_SOLID
+$#   eid     pid      n1      n2      n3      n4      n5      n6      n7      n8
+${1:       1}${2:       1}${3:       1}${4:       2}${5:       3}${6:       4}${7:       5}${8:       6}${9:       7}${10:       8}
+${0}
+endsnippet
+
+snippet elshell "Shell element"
+*ELEMENT_SHELL
+$#   eid     pid      n1      n2      n3      n4      n5      n6      n7      n8
+${1:       1}${2:       1}${3:       1}${4:       2}${5:       3}${6:       4}${7:       0}${8:       0}${9:       0}${10:       0}
+${0}
+endsnippet
+
+snippet elbeam "Beam element"
+*ELEMENT_BEAM
+$#   eid     pid      n1      n2      n3     rt1     rr1     rt2     rr2   local
+${1:       1}${2:       1}${3:       1}${4:       2}${5:       0}${6:       0}${7:       0}${8:       0}${9:       0}${10:       0}
+${0}
+endsnippet
+
+# Part definition
+snippet part "Part definition"
+*PART
+${1:Part Title}
+$#     pid     secid       mid     eosid      hgid      grav    adpopt      tmid
+${2:         1}${3:         1}${4:         1}${5:         0}${6:         0}${7:         0}${8:         0}${9:         0}
+${0}
+endsnippet
+
+# Section definitions
+snippet secshell "Shell section"
+*SECTION_SHELL
+$#   secid    elform      shrf       nip     propt   qr/irid     icomp     setyp
+${1:         1}${2:         2}${3:       1.0}${4:         5}${5:       1.0}${6:         0}${7:         0}${8:         1}
+$#      t1        t2        t3        t4      nloc     marea      idof    edgset
+${9:       1.0}${10:       1.0}${11:       1.0}${12:       1.0}${13:       0.0}${14:       0.0}${15:       0.0}${16:         0}
+${0}
+endsnippet
+
+snippet secsolid "Solid section"
+*SECTION_SOLID
+$#   secid    elform       aet
+${1:         1}${2:         1}${3:         0}
+${0}
+endsnippet
+
+snippet secbeam "Beam section"
+*SECTION_BEAM
+$#   secid    elform      shrf   qr/irid       cst     scoor       nsm
+${1:         1}${2:         1}${3:       1.0}${4:         2}${5:         0}${6:       0.0}${7:       0.0}
+$#     ts1       ts2       tt1       tt2      nsloc      ntloc
+${8:       0.0}${9:       0.0}${10:       0.0}${11:       0.0}${12:       0.0}${13:       0.0}
+${0}
+endsnippet
+
+# Material definitions
+snippet matelastic "Elastic material"
+*MAT_ELASTIC
+$#     mid        ro         e        pr        da        db  not used
+${1:         1}${2:    7850.0}${3: 2.1000E11}${4:      0.30}${5:       0.0}${6:       0.0}
+${0}
+endsnippet
+
+snippet matpwl "Piecewise linear plasticity material"
+*MAT_PIECEWISE_LINEAR_PLASTICITY
+$#     mid        ro         e        pr      sigy      etan      fail      tdel
+${1:         1}${2:    7850.0}${3: 2.1000E11}${4:      0.30}${5: 2.5000E08}${6:       0.0}${7:       0.0}${8:       0.0}
+$#       c         p      lcss      lcsr        vp
+${9:       0.0}${10:       0.0}${11:         0}${12:         0}${13:       0.0}
+${0}
+endsnippet
+
+snippet matrigid "Rigid material"
+*MAT_RIGID
+$#     mid        ro         e        pr         n    couple         m     alias
+${1:         1}${2:    7850.0}${3: 2.1000E11}${4:      0.30}${5:       0.0}${6:       0.0}${7:       0.0}
+$#     cmo      con1      con2
+${8:         1}${9:         7}${10:         7}
+${0}
+endsnippet
+
+snippet matjc "Johnson-Cook material"
+*MAT_JOHNSON_COOK
+$#     mid        ro         g         e        pr       dtf        vp    rateop
+${1:         1}${2:    7850.0}${3: 8.0000E10}${4: 2.1000E11}${5:      0.30}${6:       0.0}${7:       0.0}${8:       0.0}
+$#       a         b         n         c         m        tm        tr      epso
+${9: 7.9200E08}${10: 5.1000E08}${11:      0.26}${12:     0.014}${13:      1.03}${14:    1793.0}${15:     293.0}${16:       1.0}
+$#      cp        pc     spall        it        d1        d2        d3        d4
+${17:     452.0}${18:       0.0}${19:       2.0}${20:       0.0}${21:      0.05}${22:      3.44}${23:     -2.12}${24:     0.002}
+$#      d5      c2/p      erod      efmin
+${25:       0.0}${26:       0.0}${27:       0.0}${28:       0.0}
+${0}
+endsnippet
+
+# Contact definitions
+snippet contact_auto_ss "Automatic surface to surface contact"
+*CONTACT_AUTOMATIC_SURFACE_TO_SURFACE
+$#     cid                                                                 title
+${1:         0}${2:Contact}
+$#    ssid      msid     sstyp     mstyp    sboxid    mboxid       spr       mpr
+${3:         1}${4:         2}${5:         0}${6:         0}${7:         0}${8:         0}${9:         0}${10:         0}
+$#      fs        fd        dc        vc       vdc    penchk        bt        dt
+${11:       0.0}${12:       0.0}${13:       0.0}${14:       0.0}${15:       0.0}${16:         0}${17:       0.0}${18: 1.0000E20}
+$#     sfs       sfm       sst       mst      sfst      sfmt       fsf       vsf
+${19:       1.0}${20:       1.0}${21:       0.0}${22:       0.0}${23:       1.0}${24:       1.0}${25:       1.0}${26:       1.0}
+${0}
+endsnippet
+
+snippet contact_auto_ss_id "Automatic single surface contact"
+*CONTACT_AUTOMATIC_SINGLE_SURFACE
+$#     cid                                                                 title
+${1:         0}${2:Self Contact}
+$#    ssid      msid     sstyp     mstyp    sboxid    mboxid       spr       mpr
+${3:         1}${4:         0}${5:         0}${6:         0}${7:         0}${8:         0}${9:         0}${10:         0}
+$#      fs        fd        dc        vc       vdc    penchk        bt        dt
+${11:       0.0}${12:       0.0}${13:       0.0}${14:       0.0}${15:       0.0}${16:         0}${17:       0.0}${18: 1.0000E20}
+$#     sfs       sfm       sst       mst      sfst      sfmt       fsf       vsf
+${19:       1.0}${20:       1.0}${21:       0.0}${22:       0.0}${23:       1.0}${24:       1.0}${25:       1.0}${26:       1.0}
+${0}
+endsnippet
+
+# Control cards
+snippet control_term "Control termination"
+*CONTROL_TERMINATION
+$#  endtim    endcyc     dtmin    endeng    endmas     nosol
+${1:      10.0}${2:         0}${3:       0.0}${4:       0.0}${5:       0.0}${6:         0}
+${0}
+endsnippet
+
+snippet control_timestep "Control timestep"
+*CONTROL_TIMESTEP
+$#  dtinit    tssfac      isdo    tslimt     dt2ms      lctm     erode     ms1st
+${1:       0.0}${2:      0.90}${3:         0}${4:       0.0}${5:         0}${6:         0}${7:         0}${8:         0}
+$#  dt2msf   dt2mslc     imscl    unused    unused     rmscl
+${9:       0.0}${10:         0}${11:         0}${12:         0}${13:         0}${14:       0.0}
+${0}
+endsnippet
+
+snippet control_energy "Control energy"
+*CONTROL_ENERGY
+$#    hgen      rwen    slnten     rylen
+${1:         2}${2:         2}${3:         1}${4:         1}
+${0}
+endsnippet
+
+snippet control_hourglass "Control hourglass"
+*CONTROL_HOURGLASS
+$#     ihq        qh
+${1:         4}${2:      0.10}
+${0}
+endsnippet
+
+snippet control_shell "Control shell"
+*CONTROL_SHELL
+$#  wrpang     esort     irnxx    istupd    theory       bwc     miter      proj
+${1:      20.0}${2:         0}${3:        -1}${4:         0}${5:         2}${6:         2}${7:         1}${8:         0}
+${0}
+endsnippet
+
+snippet control_solid "Control solid"
+*CONTROL_SOLID
+$#   esort    fmatrix    niptets   swlocl      psfail
+${1:         0}${2:         0}${3:         0}${4:         0}${5:         0}
+${0}
+endsnippet
+
+snippet control_accuracy "Control accuracy"
+*CONTROL_ACCURACY
+$#     osu       inn    pidosu      iacc      exacc      
+${1:         0}${2:         4}${3:         0}${4:         0}${5:         0}
+${0}
+endsnippet
+
+# Database cards
+snippet db_d3plot "Database binary d3plot"
+*DATABASE_BINARY_D3PLOT
+$#      dt      lcdt      beam     npltc    psetid
+${1:     0.001}${2:         0}${3:         0}${4:         0}${5:         0}
+$#   ioopt      rate    cutoff    window      type      pset
+${6:         0}${7:       0.0}${8:       0.0}${9:       0.0}${10:         0}${11:         0}
+${0}
+endsnippet
+
+snippet db_glstat "Database glstat"
+*DATABASE_GLSTAT
+$#      dt    binary      lcur     ioopt
+${1:     0.001}${2:         1}${3:         0}${4:         1}
+${0}
+endsnippet
+
+snippet db_nodout "Database nodout"
+*DATABASE_NODOUT
+$#      dt    binary      lcur     ioopt   option1   option2
+${1:     0.001}${2:         1}${3:         0}${4:         1}${5:         0}${6:         0}
+${0}
+endsnippet
+
+snippet db_elout "Database elout"
+*DATABASE_ELOUT
+$#      dt    binary      lcur     ioopt   option1   option2
+${1:     0.001}${2:         1}${3:         0}${4:         1}${5:         0}${6:         0}
+${0}
+endsnippet
+
+# Define cards
+snippet define_curve "Define curve"
+*DEFINE_CURVE
+$#    lcid      sidr       sfa       sfo      offa      offo    dattyp     lcint
+${1:         1}${2:         0}${3:       1.0}${4:       1.0}${5:       0.0}${6:       0.0}${7:         0}${8:         0}
+$#                a1                  o1
+${9:                 0.0}${10:                 0.0}
+${11:                 1.0}${12:                 1.0}
+${0}
+endsnippet
+
+snippet define_table "Define table"
+*DEFINE_TABLE
+$#    tbid
+${1:         1}
+$#               value
+${2:                 1.0}
+${0}
+endsnippet
+
+# Set definitions
+snippet set_node_list "Set node list"
+*SET_NODE_LIST
+$#     sid       da1       da2       da3       da4    solver
+${1:         1}${2:       0.0}${3:       0.0}${4:       0.0}${5:       0.0}${6:MECH}
+$#    nid1      nid2      nid3      nid4      nid5      nid6      nid7      nid8
+${7:         1}${8:         2}${9:         3}${10:         4}${11:         0}${12:         0}${13:         0}${14:         0}
+${0}
+endsnippet
+
+snippet set_part_list "Set part list"
+*SET_PART_LIST
+$#     sid       da1       da2       da3       da4    solver
+${1:         1}${2:       0.0}${3:       0.0}${4:       0.0}${5:       0.0}${6:MECH}
+$#    pid1      pid2      pid3      pid4      pid5      pid6      pid7      pid8
+${7:         1}${8:         0}${9:         0}${10:         0}${11:         0}${12:         0}${13:         0}${14:         0}
+${0}
+endsnippet
+
+snippet set_segment "Set segment"
+*SET_SEGMENT
+$#     sid       da1       da2       da3       da4
+${1:         1}${2:       0.0}${3:       0.0}${4:       0.0}${5:       0.0}
+$#      n1        n2        n3        n4        a1        a2        a3        a4
+${6:         1}${7:         2}${8:         3}${9:         4}${10:       0.0}${11:       0.0}${12:       0.0}${13:       0.0}
+${0}
+endsnippet
+
+# Boundary conditions
+snippet boundary_spc_set "Boundary SPC set"
+*BOUNDARY_SPC_SET
+$#    nsid       cid      dofx      dofy      dofz     dofrx     dofry     dofrz
+${1:         1}${2:         0}${3:         1}${4:         1}${5:         1}${6:         0}${7:         0}${8:         0}
+${0}
+endsnippet
+
+snippet boundary_prescribed_motion_set "Boundary prescribed motion set"
+*BOUNDARY_PRESCRIBED_MOTION_SET
+$#    nsid       dof       vad      lcid        sf       vid     death     birth
+${1:         1}${2:         1}${3:         2}${4:         1}${5:       1.0}${6:         0}${7: 1.0000E28}${8:       0.0}
+${0}
+endsnippet
+
+# Load definitions
+snippet load_node_set "Load node set"
+*LOAD_NODE_SET
+$#    nsid       dof      lcid        sf       cid
+${1:         1}${2:         3}${3:         1}${4:       1.0}${5:         0}
+${0}
+endsnippet
+
+snippet load_segment_set "Load segment set"
+*LOAD_SEGMENT_SET
+$#     sid      lcid        sf        at        dt
+${1:         1}${2:         1}${3:       1.0}${4:       0.0}${5:       0.0}
+${0}
+endsnippet
+
+# Initial conditions
+snippet initial_velocity "Initial velocity"
+*INITIAL_VELOCITY
+$#     nid       vx        vy        vz       vxr       vyr       vzr
+${1:         1}${2:       0.0}${3:       0.0}${4:       0.0}${5:       0.0}${6:       0.0}${7:       0.0}
+${0}
+endsnippet
+
+snippet initial_velocity_generation "Initial velocity generation"
+*INITIAL_VELOCITY_GENERATION
+$#     sid     styp       vx        vy        vz      icid
+${1:         1}${2:         0}${3:       0.0}${4:       0.0}${5:       0.0}${6:         0}
+${0}
+endsnippet
+
+# Include
+snippet include "Include file"
+*INCLUDE
+${1:filename.k}
+${0}
+endsnippet
+
+# Parameter
+snippet parameter "Parameter definition"
+*PARAMETER
+R ${1:param_name} ${2:1.0}
+${0}
+endsnippet
+
+# Comment block
+snippet comment "Comment block"
+$
+$ ${1:Comment section}
+$ ${2:Description}
+$
+${0}
+endsnippet
+
+# End
+snippet end "End keyword"
+*END
+endsnippet
