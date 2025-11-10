@@ -45,6 +45,16 @@ else
     exit 1
 fi
 
+# Install ftplugin file (includes folding support)
+echo "Installing ftplugin (folding support)..."
+if [ -f "${SCRIPT_DIR}/ftplugin/lsdyna.vim" ]; then
+    mkdir -p "${FTPLUGIN_DIR}"
+    cp "${SCRIPT_DIR}/ftplugin/lsdyna.vim" "${FTPLUGIN_DIR}/"
+    echo "  - Installed ftplugin/lsdyna.vim to ${FTPLUGIN_DIR}/"
+else
+    echo "  WARNING: ftplugin/lsdyna.vim not found in ${SCRIPT_DIR}"
+fi
+
 # Install completion file
 echo "Installing completion support..."
 if [ -f "${SCRIPT_DIR}/lsdyna_complete.vim" ]; then
@@ -141,6 +151,17 @@ if [ -f "${FTPLUGIN_DIR}/lsdyna_complete.vim" ]; then
     echo "  Type 'lsd' then press Ctrl-X Ctrl-O to see dropdown menu"
     echo "  Or press Ctrl-Space for quick access"
     echo ""
+
+if [ -f "${FTPLUGIN_DIR}/lsdyna.vim" ]; then
+    echo "Code folding has been installed!"
+    echo "  Standard Vim folding commands work:"
+    echo "    zm  - Fold more (close one fold level)"
+    echo "    zr  - Fold less (open one fold level)"
+    echo "    zM  - Close all folds"
+    echo "    zR  - Open all folds"
+    echo "    za  - Toggle fold under cursor"
+    echo ""
+fi
 fi
 
 if [ -f "${FTPLUGIN_DIR}/lsdyna_help.vim" ]; then

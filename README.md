@@ -28,6 +28,13 @@ A comprehensive Vim plugin for LS-DYNA input files, providing syntax highlightin
 - Properly formatted according to LS-DYNA conventions
 - Over 40 ready-to-use templates
 
+### Code Folding
+- Automatic folding based on LS-DYNA keywords
+- Each keyword section (NODE, ELEMENT, MAT, etc.) can be folded
+- Custom fold text shows keyword name and preview
+- Standard Vim folding commands: `zm`, `zr`, `zM`, `zR`, `za`
+- Helps navigate large input files efficiently
+
 ### Additional Features
 - Context-sensitive help system
 - Automatic filetype detection
@@ -166,11 +173,41 @@ matelastic<Tab> -> MAT_ELASTIC card with tab stops
 - `lsddbnodout` - DATABASE_NODOUT
 - `lsddbelout` - DATABASE_ELOUT
 
+
+## Code Folding Usage
+
+The plugin includes smart code folding that automatically detects LS-DYNA keyword sections. Each keyword block (like `*NODE`, `*ELEMENT_SOLID`, `*MAT_ELASTIC`, etc.) can be folded to help navigate large input files.
+
+### Folding Commands
+
+Use standard Vim folding commands:
+
+- `zm` - Fold more (close one level of folds)
+- `zr` - Fold less (open one level of folds)
+- `zM` - Close all folds
+- `zR` - Open all folds
+- `za` - Toggle fold under cursor
+- `zo` - Open fold under cursor
+- `zc` - Close fold under cursor
+
+### Example Workflow
+
+```
+1. Open a large LS-DYNA file
+2. Press zM to fold all sections
+3. Use j/k to navigate between folded keywords
+4. Press za on a keyword to open just that section
+5. Press zm to close folds as you work
+```
+
+Each fold displays the keyword name and a preview of the first data line, plus the number of lines in the fold.
+
 For a complete list of 40+ templates, see [ABBREVIATIONS_GUIDE.md](ABBREVIATIONS_GUIDE.md)
 
 ## Documentation
 
 - [Complete Usage Guide](USAGE_GUIDE.md) - Detailed usage instructions and workflow examples
+- [Code Folding Guide](FOLDING_GUIDE.md) - Comprehensive guide to using code folding features
 - [Installation Guide](INSTALL.md) - Step-by-step installation instructions
 - [Abbreviations Guide](ABBREVIATIONS_GUIDE.md) - Complete list of all abbreviations
 - [Technical Documentation](LSDYNA_VIM_README.md) - Syntax highlighting details and customization
