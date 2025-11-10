@@ -248,8 +248,18 @@ function! LSDynaOpenInclude()
     return
   endif
   
-  " Open in new tab
-  execute 'tabnew ' . fnameescape(resolved_path)
+  " Check if file is already open in current buffer to avoid reopening
+  if expand('%:p') == fnamemodify(resolved_path, ':p')
+    echo "File is already open in current buffer"
+    return
+  endif
+  
+  " Open in new tab with proper escaping
+  try
+    execute 'tabnew' fnameescape(resolved_path)
+  catch
+    echo "Error opening file: " . v:exception
+  endtry
 endfunction
 
 " Function to open INCLUDE under cursor in split
@@ -286,7 +296,18 @@ function! LSDynaOpenIncludeSplit()
     return
   endif
   
-  execute 'split ' . fnameescape(resolved_path)
+  " Check if file is already open in current buffer
+  if expand('%:p') == fnamemodify(resolved_path, ':p')
+    echo "File is already open in current buffer"
+    return
+  endif
+  
+  " Open in horizontal split with proper escaping
+  try
+    execute 'split' fnameescape(resolved_path)
+  catch
+    echo "Error opening file: " . v:exception
+  endtry
 endfunction
 
 " Key mappings for opening INCLUDE files
