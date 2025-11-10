@@ -290,16 +290,20 @@ function! LSDynaOpenIncludeSplit()
 endfunction
 
 " Key mappings for opening INCLUDE files
+" These mappings override Vim's default gf behavior to use custom INCLUDE navigation
 " gf  - Open include file in new tab (when cursor is on *INCLUDE line)
 " <C-w>f - Open include file in horizontal split
 " <C-w>gf - Open include file in new tab (alternative)
-nnoremap <buffer> gf :call LSDynaOpenInclude()<CR>
-nnoremap <buffer> <C-w>f :call LSDynaOpenIncludeSplit()<CR>
-nnoremap <buffer> <C-w>gf :call LSDynaOpenInclude()<CR>
+" The <silent> flag suppresses output and <buffer> ensures mapping only applies to LS-DYNA files
+nnoremap <silent> <buffer> gf :call LSDynaOpenInclude()<CR>
+nnoremap <silent> <buffer> <C-w>f :call LSDynaOpenIncludeSplit()<CR>
+nnoremap <silent> <buffer> <C-w>gf :call LSDynaOpenInclude()<CR>
 
-" Also support opening when cursor is anywhere on the include filename line
-nnoremap <buffer> <leader>oi :call LSDynaOpenInclude()<CR>
-nnoremap <buffer> <leader>os :call LSDynaOpenIncludeSplit()<CR>
+" Leader key alternatives for opening INCLUDE files
+" <leader>oi - Open include file in new tab
+" <leader>os - Open include file in horizontal split
+nnoremap <silent> <buffer> <leader>oi :call LSDynaOpenInclude()<CR>
+nnoremap <silent> <buffer> <leader>os :call LSDynaOpenIncludeSplit()<CR>
 " nnoremap <buffer> <Space> za
 
 " Set comment string for commenting
