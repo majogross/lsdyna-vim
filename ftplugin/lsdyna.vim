@@ -118,6 +118,94 @@ endfunction
 "   zR  - Open all folds
 " Optional: Map Space to toggle fold (uncomment if desired)
 
+" Helper function to find INCLUDE_PATH declarations before current line
+" Returns a list of include paths found
+function! s:FindIncludePaths()
+  let paths = []
+  let current_line = line('.')
+  
+  " Search backwards from current position for INCLUDE_PATH keywords
+  let lnum = current_line - 1
+  while lnum > 0
+    let line = getline(lnum)
+    
+    " Found INCLUDE_PATH keyword
+    if line =~? '^\*INCLUDE_PATH'
+      " Read all path lines following INCLUDE_PATH until we hit a keyword, comment, or empty line
+      let path_lnum = lnum + 1
+      while path_lnum < current_line
+        let path_line = getline(path_lnum)
+        
+        " Stop if we hit another keyword, end of block
+        if path_line =~? '^\*'
+          break
+        endif
+        
+        " Stop if we hit a comment or empty line (end of path declarations)
+        if path_line =~ '^\$' || path_line =~ '^\s*$'
+          break
+        endif
+        
+        " Extract and add path if line contains data
+        if path_line =~ '\S'
+          let path = matchstr(path_line, '^\s*\zs\S\+')
+          " Remove quotes if present
+          let path = substitute(path, '"', '', 'g')
+          let path = substitute(path, "'", '', 'g')
+          " Add to paths list (most recent first)
+          call insert(paths, path, 0)
+        endif
+        
+        let path_lnum = path_lnum + 1
+      endwhile
+    endif
+    
+    let lnum = lnum - 1
+  endwhile
+  
+  return paths
+endfunction
+
+" Function to try multiple path combinations to find include file
+" Returns the full path if found, empty string otherwise
+function! s:ResolveIncludePath(filename)
+  " Strategy 1: Try direct path as specified (current behavior)
+  if filereadable(a:filename)
+    return a:filename
+  endif
+  
+  " Strategy 2: Try relative to current file's directory
+  let dir = expand('%:p:h')
+  let fullpath = dir . '/' . a:filename
+  if filereadable(fullpath)
+    return fullpath
+  endif
+  
+  " Strategy 3: Try combining with INCLUDE_PATH declarations
+  let include_paths = s:FindIncludePaths()
+  for include_path in include_paths
+    " Ensure path ends with separator if not already present
+    let base_path = include_path
+    if base_path !~ '[/\\]$'
+      let base_path = base_path . '/'
+    endif
+    
+    let combined_path = base_path . a:filename
+    if filereadable(combined_path)
+      return combined_path
+    endif
+    
+    " Also try relative to current file, then to include path
+    let combined_path = dir . '/' . base_path . a:filename
+    if filereadable(combined_path)
+      return combined_path
+    endif
+  endfor
+  
+  " File not found in any location
+  return ""
+endfunction
+
 " Function to open INCLUDE files
 function! LSDynaOpenInclude()
   let line = getline('.')
@@ -152,21 +240,16 @@ function! LSDynaOpenInclude()
   let filename = substitute(filename, '"', '', 'g')
   let filename = substitute(filename, "'", '', 'g')
   
-  " Check if file exists
-  if !filereadable(filename)
-    " Try relative to current file's directory
-    let dir = expand('%:p:h')
-    let fullpath = dir . '/' . filename
-    if filereadable(fullpath)
-      let filename = fullpath
-    else
-      echo "File not found: " . filename
-      return
-    endif
+  " Resolve the file path using INCLUDE_PATH if needed
+  let resolved_path = s:ResolveIncludePath(filename)
+  
+  if resolved_path == ""
+    echo "File not found: " . filename
+    return
   endif
   
   " Open in new tab
-  execute 'tabnew ' . fnameescape(filename)
+  execute 'tabnew ' . fnameescape(resolved_path)
 endfunction
 
 " Function to open INCLUDE under cursor in split
@@ -195,18 +278,15 @@ function! LSDynaOpenIncludeSplit()
   let filename = substitute(filename, '"', '', 'g')
   let filename = substitute(filename, "'", '', 'g')
   
-  if !filereadable(filename)
-    let dir = expand('%:p:h')
-    let fullpath = dir . '/' . filename
-    if filereadable(fullpath)
-      let filename = fullpath
-    else
-      echo "File not found: " . filename
-      return
-    endif
+  " Resolve the file path using INCLUDE_PATH if needed
+  let resolved_path = s:ResolveIncludePath(filename)
+  
+  if resolved_path == ""
+    echo "File not found: " . filename
+    return
   endif
   
-  execute 'split ' . fnameescape(filename)
+  execute 'split ' . fnameescape(resolved_path)
 endfunction
 
 " Key mappings for opening INCLUDE files

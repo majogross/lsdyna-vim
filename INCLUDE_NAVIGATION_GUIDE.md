@@ -1,394 +1,208 @@
-# LS-DYNA Vim Plugin - INCLUDE File Navigation Guide
-
-The LS-DYNA Vim plugin provides convenient navigation between INCLUDE files, allowing you to quickly open referenced files without leaving Vim.
+# LS-DYNA INCLUDE Navigation Guide
 
 ## Overview
 
-LS-DYNA models often split large input decks into multiple files using `*INCLUDE` or `*INCLUDE_PATH` keywords. This plugin allows you to open these included files directly from within Vim with simple keystrokes.
+The LS-DYNA Vim plugin provides enhanced navigation for `*INCLUDE` files with automatic `*INCLUDE_PATH` resolution. When you navigate to an include file, the plugin intelligently searches multiple locations to find the file.
 
-## How It Works
+## File Path Resolution Strategy
 
-When your cursor is on an `*INCLUDE` or `*INCLUDE_PATH` line, you can open the referenced file using standard Vim file navigation commands.
+When you navigate to an `*INCLUDE` file, the plugin tries the following locations in order:
 
-## Supported Formats
+1. **Direct path**: The exact path as specified in the INCLUDE line (maintains backward compatibility)
+2. **Relative to current file**: The include path relative to the directory of the current file
+3. **INCLUDE_PATH + filename**: Combines any `*INCLUDE_PATH` declarations with the include filename
+4. **Current directory + INCLUDE_PATH + filename**: Combines the current file's directory with INCLUDE_PATH and filename
 
-The plugin handles various INCLUDE formats:
+## How INCLUDE_PATH Works
+
+### INCLUDE_PATH Declaration Format
 
 ```
-*INCLUDE
-path/to/file.k
-
-*INCLUDE path/to/file.k
-
-*INCLUDE
-"path/to/file.k"
-
 *INCLUDE_PATH
-path/to/file.k
-
-*INCLUDE_PATH
-../includes/material.k
+/path/to/includes/
 ```
 
-## Key Commands
+The path is specified on the line(s) immediately following the `*INCLUDE_PATH` keyword.
 
-### Opening in New Tab (Recommended)
+**Multiple Paths per INCLUDE_PATH:**
+```
+*INCLUDE_PATH
+/path/to/parts/
+/path/to/materials/
+/path/to/contacts/
+```
 
-| Command | Description |
-|---------|-------------|
-| `gf` | Go to file - opens INCLUDE in new tab |
-| `<C-w>gf` | Alternative - opens INCLUDE in new tab |
-| `<leader>oi` | Open Include - opens in new tab |
+You can specify multiple paths after a single `*INCLUDE_PATH` keyword. The plugin will read all consecutive non-empty, non-comment lines as paths until it encounters another keyword, a comment line, or an empty line.
 
-### Opening in Split Window
+### Example LS-DYNA File Structure
 
-| Command | Description |
-|---------|-------------|
-| `<C-w>f` | Opens INCLUDE in horizontal split |
-| `<leader>os` | Open in Split - opens in horizontal split |
+**Example 1: Multiple INCLUDE_PATH Keywords**
+```
+*KEYWORD
+$ Define base paths for include files
+*INCLUDE_PATH
+/project/models/parts/
+*INCLUDE_PATH
+./components/
+$ Include files using relative paths
+*INCLUDE
+front_bumper.k
+*INCLUDE
+side_panel.k
+```
 
-### Navigation Between Tabs
+In this example:
+- `front_bumper.k` will be searched in `/project/models/parts/front_bumper.k`
+- `side_panel.k` will be searched in `./components/side_panel.k`
+- The plugin searches backward from the current INCLUDE to find all INCLUDE_PATH declarations
 
-| Command | Description |
-|---------|-------------|
-| `gt` | Go to next tab |
-| `gT` | Go to previous tab |
-| `2gt` | Go to tab number 2 |
-| `:tabc` | Close current tab |
-| `:tabo` | Close all other tabs |
+**Example 2: Multiple Paths in One INCLUDE_PATH**
+```
+*KEYWORD
+$ Define multiple base paths in one declaration
+*INCLUDE_PATH
+/shared/materials/
+/shared/parts/
+/shared/contacts/
+$ Include files will be searched in all paths above
+*INCLUDE
+steel_mat.k
+*INCLUDE
+chassis_part.k
+```
+
+In this example, both include files will be searched in all three paths:
+- `steel_mat.k` is searched in `/shared/materials/`, `/shared/parts/`, `/shared/contacts/`
+- `chassis_part.k` is searched in the same three paths
+
+## Navigation Commands
+
+### Basic Navigation
+
+- **`gf`**: Open include file in new tab (cursor must be on `*INCLUDE` line)
+- **`<C-w>f`**: Open include file in horizontal split
+- **`<C-w>gf`**: Open include file in new tab (alternative)
+
+### Custom Mappings
+
+- **`<leader>oi`**: Open include file in new tab (works anywhere on the include line)
+- **`<leader>os`**: Open include file in split (works anywhere on the include line)
 
 ## Usage Examples
 
-### Example 1: Opening a Single Include
+### Example 1: Direct Path
 
-```lsdyna
-*KEYWORD
+```
 *INCLUDE
-materials.k
-*NODE
-...
+/absolute/path/to/mesh.k
 ```
 
-1. Move cursor to the `*INCLUDE` line
-2. Press `gf`
-3. The file `materials.k` opens in a new tab
-4. Edit as needed
-5. Press `:tabc` or `gt` to go back
+Position cursor on the `*INCLUDE` line and press `gf` to open `/absolute/path/to/mesh.k`
 
-### Example 2: Navigating Through Multiple Includes
+### Example 2: Relative Path
 
-```lsdyna
-*KEYWORD
+```
 *INCLUDE
-nodes.k
+./parts/chassis.k
+```
+
+If the current file is in `/project/model/`, pressing `gf` opens `/project/model/parts/chassis.k`
+
+### Example 3: INCLUDE_PATH Resolution
+
+```
+*INCLUDE_PATH
+/shared/materials/
 *INCLUDE
-elements.k
+steel_properties.k
+```
+
+Pressing `gf` on the INCLUDE line will search for:
+1. `steel_properties.k` (direct)
+2. `./steel_properties.k` (relative to current file)
+3. `/shared/materials/steel_properties.k` (INCLUDE_PATH + filename)
+
+### Example 4: Multiple INCLUDE_PATH Declarations
+
+```
+*INCLUDE_PATH
+/base/path/meshes/
 *INCLUDE
-materials.k
+part1.k
+*INCLUDE_PATH
+/base/path/contacts/
 *INCLUDE
-contacts.k
+contact_definitions.k
 ```
 
-Workflow:
-```
-1. Cursor on "*INCLUDE" for nodes.k
-2. Press gf - opens nodes.k in tab 2
-3. Press gt - returns to main file
-4. Move to next *INCLUDE line
-5. Press gf - opens elements.k in tab 3
-6. Continue navigating with gt/gT
-```
+The plugin searches backward from each INCLUDE to find all INCLUDE_PATH declarations:
+- `part1.k` uses `/base/path/meshes/`
+- `contact_definitions.k` uses both `/base/path/meshes/` and `/base/path/contacts/`
 
-### Example 3: Working with Nested Includes
+### Example 5: Combined Multiple Paths
 
-Main file `model.k`:
-```lsdyna
-*KEYWORD
+```
+*INCLUDE_PATH
+/project/base/
+/project/shared/
+/fallback/path/
 *INCLUDE
-mesh/all_mesh.k
+component.k
 ```
 
-File `mesh/all_mesh.k`:
-```lsdyna
-*INCLUDE
-nodes.k
-*INCLUDE
-elements.k
-```
+The plugin will search for `component.k` in:
+1. `component.k` (direct)
+2. `./component.k` (relative to current file)
+3. `/project/base/component.k`
+4. `/project/shared/component.k`
+5. `/fallback/path/component.k`
 
-Workflow:
-```
-1. In model.k, cursor on *INCLUDE for all_mesh.k
-2. Press gf - opens all_mesh.k
-3. Cursor on *INCLUDE for nodes.k
-4. Press gf - opens nodes.k (relative to all_mesh.k location)
-5. Use gt/gT to navigate between all open files
-```
+## Features
 
-### Example 4: Using Splits for Comparison
+- **Backward Compatibility**: Existing direct paths continue to work as before
+- **Smart Search**: Automatically tries multiple locations to find the file
+- **Multiple INCLUDE_PATH Support**: Handles multiple INCLUDE_PATH declarations in the same file
+- **Quote Handling**: Automatically removes quotes from filenames
+- **Error Messages**: Clear feedback when files cannot be found
 
-```
-1. Open main file: vim model.k
-2. Cursor on first *INCLUDE
-3. Press <C-w>f - opens in horizontal split
-4. Now you can see both files simultaneously
-5. Use <C-w>w to switch between windows
-```
+## Implementation Details
 
-## File Path Resolution
+The enhancement adds two helper functions:
 
-The plugin searches for include files in this order:
+1. **`s:FindIncludePaths()`**: Searches backward from the cursor to find all `*INCLUDE_PATH` declarations and reads all paths specified after each keyword (supports multiple paths per INCLUDE_PATH)
+2. **`s:ResolveIncludePath(filename)`**: Tries multiple path combinations to locate the include file
 
-1. **Absolute path**: If the path starts with `/`, uses it directly
-2. **Relative to current file**: Searches relative to the directory of the current file
-3. **Current directory**: Searches in Vim's current working directory
+Both `LSDynaOpenInclude()` and `LSDynaOpenIncludeSplit()` functions now use these helpers to resolve file paths intelligently.
 
-### Examples:
+### How Multiple Paths Are Read
 
-```lsdyna
-*INCLUDE
-materials.k
-```
-Searches for: `<current_file_directory>/materials.k`
-
-```lsdyna
-*INCLUDE
-../includes/materials.k
-```
-Searches for: `<current_file_directory>/../includes/materials.k`
-
-```lsdyna
-*INCLUDE
-/absolute/path/to/materials.k
-```
-Uses: `/absolute/path/to/materials.k` directly
-
-## Tips and Tricks
-
-### Quick Navigation Workflow
-
-```vim
-" Open main file
-vim model.k
-
-" Use gf to open includes
-" Use gt/gT to switch between tabs
-" Use :ls to see all buffers
-" Use :tabs to see all tabs
-```
-
-### View All Open Files
-
-```vim
-:tabs       " List all tabs
-:ls         " List all buffers
-:files      " Same as :ls
-```
-
-### Close Multiple Tabs
-
-```vim
-:tabclose   " Close current tab
-:tabo       " Close all tabs except current
-:qa         " Quit all (prompts if unsaved changes)
-```
-
-### Split View for Comparison
-
-```vim
-" Open main file
-vim model.k
-
-" Open include in vertical split
-:vsplit
-<C-w>gf
-
-" Or open in horizontal split
-:split
-<C-w>f
-
-" Resize splits
-<C-w>+    " Increase height
-<C-w>-    " Decrease height
-<C-w>>    " Increase width
-<C-w><    " Decrease width
-<C-w>=    " Equal size
-```
-
-### Working with Many Includes
-
-For models with many includes:
-
-```vim
-" Open main file with all includes folded
-vim model.k
-zM
-
-" Navigate to INCLUDE sections
-/INCLUDE
-
-" Open each include
-gf
-
-" View tab structure
-:tabs
-
-" Close unnecessary tabs
-:tabc
-```
-
-## Configuration
-
-### Custom Key Mappings
-
-Add to your `~/.vimrc` to customize:
-
-```vim
-" Use Enter to open includes in new tab
-autocmd FileType lsdyna nnoremap <buffer> <CR> :call LSDynaOpenInclude()<CR>
-
-" Use Shift-Enter for split
-autocmd FileType lsdyna nnoremap <buffer> <S-CR> :call LSDynaOpenIncludeSplit()<CR>
-
-" Double-click to open (if using gvim)
-autocmd FileType lsdyna nnoremap <buffer> <2-LeftMouse> :call LSDynaOpenInclude()<CR>
-```
-
-### Set Default Include Path
-
-If your includes are always in a specific directory:
-
-```vim
-" Add to ~/.vimrc
-autocmd FileType lsdyna set path+=./includes
-autocmd FileType lsdyna set path+=../includes
-```
+When the plugin encounters an `*INCLUDE_PATH` keyword, it reads consecutive lines as paths until it hits:
+- Another LS-DYNA keyword (line starting with `*`)
+- A comment line (starting with `$`)
+- An empty line
+- The current cursor position
 
 ## Troubleshooting
 
-### File Not Found
+### File Not Found Error
 
-If you see "File not found" error:
+If you see "File not found: filename.k", the plugin searched all possible locations and couldn't find the file. Check:
 
-1. Check the filename in the INCLUDE line
-2. Verify the file exists relative to the current file
-3. Check for typos in the path
-4. Use absolute path if needed
+1. The filename spelling in the INCLUDE line
+2. The path specified in INCLUDE_PATH declarations
+3. File permissions and existence on the filesystem
 
-```vim
-" Check current file location
-:pwd
-:echo expand('%:p:h')
-```
+### No INCLUDE_PATH Found
 
-### Wrong File Opens
+If no `*INCLUDE_PATH` is found before the current INCLUDE, the plugin falls back to:
+1. Direct path resolution
+2. Relative to current file's directory
 
-If the wrong file opens:
+This ensures backward compatibility with files that don't use INCLUDE_PATH.
 
-1. Ensure cursor is on the `*INCLUDE` line, not on the filename line
-2. Check for multiple files with similar names
-3. Verify the relative path is correct
+## Notes
 
-### Quotes in Filenames
-
-The plugin automatically removes quotes:
-```lsdyna
-*INCLUDE "file.k"    → opens file.k
-*INCLUDE 'file.k'    → opens file.k
-```
-
-## Advanced Usage
-
-### Opening All Includes at Once
-
-Create a Vim script to open all includes:
-
-```vim
-" Add to ~/.vimrc
-function! OpenAllIncludes()
-  let save_cursor = getcurpos()
-  normal! gg
-  while search('^\*INCLUDE', 'W') > 0
-    call LSDynaOpenInclude()
-  endwhile
-  call setpos('.', save_cursor)
-endfunction
-
-" Map to <leader>oa (Open All)
-autocmd FileType lsdyna nnoremap <buffer> <leader>oa :call OpenAllIncludes()<CR>
-```
-
-### List All Includes
-
-```vim
-" Show all INCLUDE lines
-:g/^\*INCLUDE/p
-
-" Show with line numbers
-:g/^\*INCLUDE/#
-```
-
-### Search Across Includes
-
-```vim
-" Search in all open buffers
-:bufdo vimgrep /pattern/ %
-
-" Search in specific files
-:vimgrep /pattern/ *.k
-```
-
-## Integration with Other Features
-
-### Combined with Folding
-
-```vim
-zM              " Fold all
-/INCLUDE        " Search for INCLUDE
-za              " Open that fold
-gf              " Open the include file
-```
-
-### Combined with Completion
-
-```vim
-" In the include file
-lsd<C-x><C-o>   " Use completion
-" Add new cards
-:w              " Save
-gt              " Return to main file
-```
-
-## Summary
-
-The INCLUDE navigation feature provides:
-- Quick access to included files with `gf`
-- Opening in tabs or splits
-- Intelligent path resolution
-- Standard Vim navigation commands
-- Integration with folding and other features
-
-This dramatically improves workflow when working with multi-file LS-DYNA models, allowing seamless navigation between the main deck and all included files.
-
-## Quick Reference Card
-
-```
-OPENING INCLUDES:
-  gf          Open in new tab
-  <C-w>f      Open in horizontal split
-  <C-w>gf     Open in new tab (alternative)
-  <leader>oi  Open in new tab (mnemonic: Open Include)
-  <leader>os  Open in split (mnemonic: Open Split)
-
-NAVIGATING TABS:
-  gt          Next tab
-  gT          Previous tab
-  2gt         Go to tab 2
-  :tabc       Close current tab
-  :tabo       Close all other tabs
-
-NAVIGATING SPLITS:
-  <C-w>w      Next window
-  <C-w>h/j/k/l  Move to window
-  <C-w>q      Close window
-  <C-w>=      Equal sizes
+- INCLUDE_PATH paths can be absolute or relative
+- The plugin respects both forward slashes (/) and backslashes (\) as path separators
+- Path resolution is performed at navigation time, not when the file is loaded
+- The most recent INCLUDE_PATH before the current position is used for resolution
