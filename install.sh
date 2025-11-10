@@ -161,6 +161,11 @@ if [ -f "${FTPLUGIN_DIR}/lsdyna.vim" ]; then
     echo "    zR  - Open all folds"
     echo "    za  - Toggle fold under cursor"
     echo ""
+    echo "INCLUDE file navigation has been installed!"
+    echo "  Press 'gf' on an *INCLUDE line to open the file in a new tab"
+    echo "  Press '<C-w>f' to open in a horizontal split"
+    echo "  Use 'gt' and 'gT' to navigate between tabs"
+    echo ""
 fi
 fi
 

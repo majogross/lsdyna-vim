@@ -35,6 +35,14 @@ A comprehensive Vim plugin for LS-DYNA input files, providing syntax highlightin
 - Standard Vim folding commands: `zm`, `zr`, `zM`, `zR`, `za`
 - Helps navigate large input files efficiently
 
+### INCLUDE File Navigation
+- Open included files directly from `*INCLUDE` lines
+- Press `gf` on an INCLUDE line to open file in new tab
+- Press `<C-w>f` to open in horizontal split
+- Intelligent path resolution (relative and absolute paths)
+- Seamless navigation between main file and includes
+- Works with nested include structures
+
 ### Additional Features
 - Context-sensitive help system
 - Automatic filetype detection
@@ -193,6 +201,38 @@ Use standard Vim folding commands:
 ### Example Workflow
 
 ```
+
+## INCLUDE File Navigation
+
+The plugin provides seamless navigation between INCLUDE files.
+
+### Opening Include Files
+
+When your cursor is on an `*INCLUDE` or `*INCLUDE_PATH` line:
+
+- `gf` - Open the included file in a new tab
+- `<C-w>f` - Open the included file in a horizontal split
+- `<C-w>gf` - Open the included file in a new tab (alternative)
+
+### Example
+
+```lsdyna
+*KEYWORD
+*INCLUDE
+materials.k
+*INCLUDE
+elements.k
+*NODE
+1    0.0    0.0    0.0
+```
+
+1. Move cursor to the `*INCLUDE` line
+2. Press `gf`
+3. The file opens in a new tab
+4. Use `gt` to switch between tabs
+
+The plugin automatically resolves relative paths based on the current file's location, making it easy to navigate complex multi-file models.
+
 1. Open a large LS-DYNA file
 2. Press zM to fold all sections
 3. Use j/k to navigate between folded keywords
@@ -208,6 +248,7 @@ For a complete list of 40+ templates, see [ABBREVIATIONS_GUIDE.md](ABBREVIATIONS
 
 - [Complete Usage Guide](USAGE_GUIDE.md) - Detailed usage instructions and workflow examples
 - [Code Folding Guide](FOLDING_GUIDE.md) - Comprehensive guide to using code folding features
+- [INCLUDE Navigation Guide](INCLUDE_NAVIGATION_GUIDE.md) - Opening and navigating between include files
 - [Installation Guide](INSTALL.md) - Step-by-step installation instructions
 - [Abbreviations Guide](ABBREVIATIONS_GUIDE.md) - Complete list of all abbreviations
 - [Technical Documentation](LSDYNA_VIM_README.md) - Syntax highlighting details and customization
