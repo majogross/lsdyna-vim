@@ -114,6 +114,8 @@ iabbrev <buffer> lsdinclude *INCLUDE<CR>filename.k
 " Parameter
 iabbrev <buffer> lsdparameter *PARAMETER<CR>R param_name 1.0
 
+iabbrev <buffer> lsdparameterexpr *PARAMETER_EXPRESSION<CR>$#                                                                       title<CR>Parameter Expression Title<CR>R expression "param1 + param2 * 2.0"
+
 " End
 iabbrev <buffer> lsdend *END
 

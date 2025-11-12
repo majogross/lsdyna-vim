@@ -73,6 +73,7 @@ function! LSDynaComplete(findstart, base)
       \ {'word': 'lsdinitvelgen', 'menu': 'Initial velocity generation', 'info': 'INITIAL_VELOCITY_GENERATION (set)'},
       \ {'word': 'lsdinclude', 'menu': 'Include file', 'info': 'INCLUDE external file'},
       \ {'word': 'lsdparameter', 'menu': 'Parameter definition', 'info': 'PARAMETER (variable)'},
+      \ {'word': 'lsdparameterexpr', 'menu': 'Parameter expression', 'info': 'PARAMETER_EXPRESSION (formula)'},
       \ ]
     
     " Filter completions based on what user typed
