@@ -12,7 +12,7 @@ echo ""
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Set installation directories
-VIM_DIR="${HOME}/.vim"
+VIM_DIR="/proj/cae_muc/q667207/.vim"
 SYNTAX_DIR="${VIM_DIR}/syntax"
 FTDETECT_DIR="${VIM_DIR}/ftdetect"
 ULTISNIPS_DIR="${VIM_DIR}/UltiSnips"

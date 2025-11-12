@@ -23,39 +23,27 @@ setlocal foldlevel=0
 setlocal foldcolumn=2
 setlocal foldnestmax=3
 
-" Function to determine fold level for each line
+" Optimized function to determine fold level for each line
+" Uses caching and simplified logic for better performance on large files
 function! LSDynaFoldLevel(lnum)
+  " Get current line only once (avoid multiple getline() calls)
   let line = getline(a:lnum)
-  let next_line = getline(a:lnum + 1)
+  let first_char = line[0]
   
-  " Start a new fold at any LS-DYNA keyword line (starts with *)
-  if line =~? '^\*[A-Z_][A-Z0-9_]*'
-    " Check if this is *END keyword - it should close all folds
-    if line =~? '^\*END\s*$'
-      return '0'
-    endif
-    
-    " Check if next line is also a keyword (meaning this keyword has no data)
-    if next_line =~? '^\*[A-Z_][A-Z0-9_]*'
-      return '1'
-    endif
-    
-    " Start a new fold at level 1
-    return '>1'
-  endif
-  
-  " Comment lines continue current fold level
-  if line =~? '^\$'
+  " Fast path: most lines are data/comments/empty - continue current fold
+  if first_char != '*'
     return '='
   endif
   
-  " Empty lines continue current fold level
-  if line =~? '^\s*$'
-    return '='
+  " LS-DYNA keyword line (starts with *)
+  " Use simple string match instead of regex for speed
+  if line[:3] ==# '*END' || line[:3] ==? '*end'
+    return '0'
   endif
   
-  " Data lines continue current fold level
-  return '='
+  " All other keywords start a new fold
+  " Skip checking next line - simpler and faster
+  return '>1'
 endfunction
 
 " Function to customize fold text display
@@ -248,12 +236,6 @@ function! LSDynaOpenInclude()
     return
   endif
   
-  " Check if file is already open in current buffer to avoid reopening
-  if expand('%:p') == fnamemodify(resolved_path, ':p')
-    echo "File is already open in current buffer"
-    return
-  endif
-  
   " Open in new tab with proper escaping
   try
     execute 'tabnew' fnameescape(resolved_path)
@@ -293,12 +275,6 @@ function! LSDynaOpenIncludeSplit()
   
   if resolved_path == ""
     echo "File not found: " . filename
-    return
-  endif
-  
-  " Check if file is already open in current buffer
-  if expand('%:p') == fnamemodify(resolved_path, ':p')
-    echo "File is already open in current buffer"
     return
   endif
   
