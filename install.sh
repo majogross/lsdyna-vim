@@ -45,14 +45,16 @@ else
     exit 1
 fi
 
-# Install ftplugin file (includes folding support)
-echo "Installing ftplugin (folding support)..."
+# Install ftplugin file (includes folding support and INCLUDE navigation)
+echo "Installing ftplugin (folding support and INCLUDE navigation)..."
 if [ -f "${SCRIPT_DIR}/ftplugin/lsdyna.vim" ]; then
     mkdir -p "${FTPLUGIN_DIR}"
     cp "${SCRIPT_DIR}/ftplugin/lsdyna.vim" "${FTPLUGIN_DIR}/"
     echo "  - Installed ftplugin/lsdyna.vim to ${FTPLUGIN_DIR}/"
 else
-    echo "  WARNING: ftplugin/lsdyna.vim not found in ${SCRIPT_DIR}"
+    echo "  ERROR: ftplugin/lsdyna.vim not found in ${SCRIPT_DIR}"
+    echo "  This file is required for INCLUDE navigation functionality."
+    exit 1
 fi
 
 # Install completion file
@@ -78,7 +80,7 @@ SNIPPET_INSTALLED=false
 
 if [ -f "${SCRIPT_DIR}/lsdyna.snippets" ]; then
     # Check for UltiSnips
-    if vim --version 2>/dev/null | grep -q "VIM" && [ -d "${HOME}/.vim/plugged/ultisnips" -o -d "${HOME}/.vim/bundle/ultisnips" ]; then
+    if vim --version 2>/dev/null | grep -q "VIM" && [ -d "${VIM_DIR}/plugged/ultisnips" -o -d "${VIM_DIR}/bundle/ultisnips" ]; then
         echo "UltiSnips detected. Installing snippets for UltiSnips..."
         mkdir -p "${ULTISNIPS_DIR}"
         cp "${SCRIPT_DIR}/lsdyna.snippets" "${ULTISNIPS_DIR}/"
@@ -87,7 +89,7 @@ if [ -f "${SCRIPT_DIR}/lsdyna.snippets" ]; then
     fi
     
     # Check for SnipMate
-    if vim --version 2>/dev/null | grep -q "VIM" && [ -d "${HOME}/.vim/plugged/vim-snipmate" -o -d "${HOME}/.vim/bundle/vim-snipmate" ]; then
+    if vim --version 2>/dev/null | grep -q "VIM" && [ -d "${VIM_DIR}/plugged/vim-snipmate" -o -d "${VIM_DIR}/bundle/vim-snipmate" ]; then
         echo "SnipMate detected. Installing snippets for SnipMate..."
         mkdir -p "${SNIPMATE_DIR}"
         cp "${SCRIPT_DIR}/lsdyna.snippets" "${SNIPMATE_DIR}/"
